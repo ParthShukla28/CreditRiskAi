@@ -122,7 +122,7 @@ export default function LoanAdvisorChat() {
 
   return (
     <div style={{
-      background: C.surface, border: `2px solid #000000`,
+      background: C.surface, border: `1px solid ${C.border}`,
       borderRadius: 8, display: 'flex', flexDirection: 'column',
       fontFamily: C.sans, overflow: 'hidden',
     }}>
