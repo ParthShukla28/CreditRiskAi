@@ -5,21 +5,14 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score, classification_report, roc_auc_score
 from xgboost import XGBClassifier
 
-# Import the SAME feature engineering used at inference time (shap_explain.py).
-# This is the fix for the train/serve skew risk: previously the 4 engineered
-# features (debt_to_income, monthly_payment_est, risk_ratio, income_per_year_exp)
-# were written out separately in this file AND in shap_explain.py. They matched
-# by luck, not by design — if either copy was ever edited alone, training and
-# serving would silently disagree. Now there is exactly one definition.
+
 from shap_explain import _engineer_features, RAW_FEATURES, ALL_FEATURES
 
 raw = pd.read_csv("cleaned_loans.csv")
 
-# ✅ Feature Engineering — single shared implementation (see import above)
+
 df = _engineer_features(raw[RAW_FEATURES])
-# _engineer_features returns columns in ALL_FEATURES order, so downstream
-# column order is guaranteed to match what shap_explain.py expects at
-# inference time (fixes the fragile index/order coupling in SHAP output).
+
 df["loan_status"] = raw["loan_status"]
 
 X = df[ALL_FEATURES]
@@ -27,10 +20,6 @@ y = df["loan_status"]
 
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42, stratify=y
-    # stratify=y: keeps the same Fully-Paid/Charged-Off ratio in both
-    # train and test splits — matters here because the classes are
-    # imbalanced (see scale_pos_weight below), and a random split could
-    # otherwise leave the test set under/over-representing defaults.
 )
 
 scaler = StandardScaler()
@@ -62,6 +51,3 @@ print(f"\nAUC Score: {roc_auc_score(y_test, y_prob):.4f}")
 
 joblib.dump(model,  "model.pkl")
 joblib.dump(scaler, "scaler.pkl")
-
-
-# uvicorn app:app --reload
