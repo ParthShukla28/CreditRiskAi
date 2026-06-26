@@ -14,6 +14,7 @@ const errorHandler = require("./middleware/errorHandler");
 
 const app = express();
 app.set("trust proxy", 1);
+app.get("/health", (req, res) => res.json({ status: "ok" }));
 const PORT = process.env.PORT || 3001;
 
 connectDB();
