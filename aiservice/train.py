@@ -5,14 +5,11 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score, classification_report, roc_auc_score
 from xgboost import XGBClassifier
 
-
 from shap_explain import _engineer_features, RAW_FEATURES, ALL_FEATURES
 
 raw = pd.read_csv("cleaned_loans.csv")
 
-
 df = _engineer_features(raw[RAW_FEATURES])
-
 df["loan_status"] = raw["loan_status"]
 
 X = df[ALL_FEATURES]
@@ -51,3 +48,5 @@ print(f"\nAUC Score: {roc_auc_score(y_test, y_prob):.4f}")
 
 joblib.dump(model,  "model.pkl")
 joblib.dump(scaler, "scaler.pkl")
+
+

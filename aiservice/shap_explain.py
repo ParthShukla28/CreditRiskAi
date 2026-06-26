@@ -18,12 +18,12 @@ ALL_FEATURES = [
 ]
 
 FEATURE_LABELS = {
-    "annual_inc"   : "Annual Income",
-    "loan_amnt"         : "Loan Amount",
+    "annual_inc"        : "Annual Income",
+    "loan_amnt"       : "Loan Amount",
     "int_rate"         : "Interest Rate",
     "emp_length"       : "Employment Length",
-    "credit_history"     : "Credit History",
-    "debt_to_income"     : "Debt to Income Ratio",
+    "credit_history"   : "Credit History",
+    "debt_to_income"  : "Debt to Income Ratio",
     "monthly_payment_est": "Estimated Monthly Payment",
     "risk_ratio"         : "Risk Ratio",
     "income_per_year_exp": "Income per Year of Experience"
@@ -43,7 +43,6 @@ def _engineer_features(X: pd.DataFrame) -> pd.DataFrame:
 
 
 def _get_risk_label(score: float) -> str:
-
     if score < 0.33:
         return "Low"
     elif score < 0.66:
@@ -58,13 +57,10 @@ def explain_applicant(input_data: dict) -> dict:
     if missing:
         raise ValueError(f"Missing required fields: {missing}")
 
-
     X = pd.DataFrame([input_data])
     X = _engineer_features(X)
 
-
     X_scaled = scaler.transform(X)
-
 
     risk_score = float(model.predict_proba(X_scaled)[0][1])
 
@@ -75,7 +71,6 @@ def explain_applicant(input_data: dict) -> dict:
     else:
         shap_array = np.array(shap_values)[0]
     abs_shap = np.abs(shap_array)
-
 
     top_idx = abs_shap.argsort()[::-1][:5]
 

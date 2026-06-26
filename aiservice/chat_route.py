@@ -6,8 +6,8 @@ router = APIRouter()
 
 class ChatRequest(BaseModel):
     loan_amnt:      float
-    annual_inc:     float
-    int_rate:       float
+    annual_inc:    float
+    int_rate:    float
     emp_length:     float
     credit_history: float
 
@@ -18,18 +18,16 @@ class ChatResponse(BaseModel):
     top_factors: list | None = None
     parsed: dict | None = None
 
-
 def _build_verdict(score: float, category: str, top_factors: list, parsed: dict) -> str:
     loan    = parsed["loan_amnt"]
     income  = parsed["annual_inc"]
     rate    = parsed["int_rate"]
 
-
     emoji = {"Low": "", "Medium": "", "High": ""}.get(category, "")
     header = f"{emoji} **{category} risk** — default probability {round(score * 100, 1)}%"
 
-    
     factor_lines = []
+   
     factor_map = {
         "debt_to_income":      f"your debt-to-income ratio ({round(loan / (income + 1), 2)}) is "
                                + ("high" if loan / (income + 1) > 0.3 else "manageable"),
@@ -52,7 +50,7 @@ def _build_verdict(score: float, category: str, top_factors: list, parsed: dict)
 
     factors_text = "\n".join(factor_lines) if factor_lines else "• Overall profile assessed across all features"
 
-
+   
     if category == "Low":
         advice = "This loan looks good. You're likely to qualify with standard terms."
     elif category == "Medium":
@@ -77,6 +75,7 @@ def chat(req: ChatRequest):
         score       = result["risk_score"]
         top_factors = result.get("top_factors", [])
 
+     
         category = result["risk_label"]
 
         reply = _build_verdict(score, category, top_factors, parsed)
@@ -91,5 +90,5 @@ def chat(req: ChatRequest):
 
     except Exception as e:
         return ChatResponse(
-            reply=f"The risk model ran into an issue: {str(e)}. Please try again.",
+            reply=f"Sorry, the risk model ran into an issue: {str(e)}. Please try again.",
         )

@@ -1,10 +1,8 @@
-// components/LoanDetailsPage.tsx
 import { useState, useEffect } from 'react'
 import { Loader } from 'lucide-react'
 import { loanService } from '../services/loanService'
 import type { Page, ToastMsg } from '../App'
 
-// ─── Design tokens ──────────────────────────────────────────────────────────
 const C = {
   void:     '#FFFFFF',
   surface:  '#FFFFFF',
@@ -40,7 +38,6 @@ const divider: React.CSSProperties = {
   margin: 0,
 }
 
-// ─── Rupee formatters ────────────────────────────────────────────────────────
 const formatINR = (value: number) =>
   new Intl.NumberFormat('en-IN', {
     style: 'currency',
@@ -54,15 +51,13 @@ interface Props {
   showToast: (msg: string, type?: ToastMsg['type']) => void
 }
 
-// ─── Types ───────────────────────────────────────────────────────────────────
-// Shape stored by RiskAssessment.factorSchema (Mongoose)
+
 interface TopFactor {
-  factor:    string    // e.g. "credit_history"
-  impact:    number    // 0–1 normalised importance
+  factor:    string  
+  impact:    number    
   
 }
 
-// ─── InfoRow ────────────────────────────────────────────────────────────────
 function InfoRow({ label, value }: { label: string; value: string | number | undefined }) {
   return (
     <div style={{
@@ -75,7 +70,6 @@ function InfoRow({ label, value }: { label: string; value: string | number | und
   )
 }
 
-// ─── Section card ────────────────────────────────────────────────────────────
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div style={card}>
@@ -91,7 +85,6 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   )
 }
 
-// ─── Status badge ────────────────────────────────────────────────────────────
 function StatusBadge({ status }: { status?: string }) {
   const statusMap: Record<string, { color: string; bg: string; border: string }> = {
     pending:      { color: '#92400E', bg: '#FEF3C7', border: '#FCD34D' },
@@ -123,7 +116,6 @@ function StatusBadge({ status }: { status?: string }) {
   )
 }
 
-// ─── Risk badge ──────────────────────────────────────────────────────────────
 function RiskBadge({ level }: { level?: string }) {
   const map: Record<string, string> = {
     low:    C.green,
@@ -140,7 +132,6 @@ function RiskBadge({ level }: { level?: string }) {
 
 
 
-// ─── Confirm modal ───────────────────────────────────────────────────────────
 function ConfirmModal({
   action, applicantName, reviewNotes, onNotesChange,
   onConfirm, onCancel, loading,
@@ -222,7 +213,6 @@ function ConfirmModal({
   )
 }
 
-// ─── Factor definitions ──────────────────────────────────────────────────────
 const FACTOR_DEFS: Record<string, string> = {
   annual_inc:          'Yearly gross income',
   loan_amnt:           'Requested loan size',
@@ -235,7 +225,6 @@ const FACTOR_DEFS: Record<string, string> = {
   income_per_year_exp: 'Income per work year',
 }
 
-// ─── Main component ───────────────────────────────────────────────────────────
 export default function LoanDetailsPage({ loanId, navigate, showToast }: Props) {
   const [loan, setLoan]                   = useState<Record<string, unknown> | null>(null)
   const [loading, setLoading]             = useState(true)
@@ -306,12 +295,11 @@ export default function LoanDetailsPage({ loanId, navigate, showToast }: Props) 
   const status    = loan.status as string
   const isPending = status === 'pending' || status === 'under_review'
 
-  // Mongoose populates riskAssessment — all keys are camelCase from the schema
-  const riskScore    = risk?.riskScore as number | undefined          // 0–100
+  const riskScore    = risk?.riskScore as number | undefined         
   const displayScore = riskScore != null ? Math.round(riskScore) : null
   const topFactors   = (risk?.topFactors ?? []) as TopFactor[]
   const confidence   = displayScore != null ? `${displayScore}%` : null
-  const riskCategory = risk?.riskCategory as string | undefined       // "low"|"medium"|"high"
+  const riskCategory = risk?.riskCategory as string | undefined       
 
   const fullName = applicant?.fullName as string || 'Unknown'
   const initials = fullName.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()
@@ -342,7 +330,6 @@ export default function LoanDetailsPage({ loanId, navigate, showToast }: Props) 
 
       <div style={{ padding: '28px 32px', maxWidth: 1200, margin: '0 auto' }}>
 
-        {/* ── Header ──────────────────────────────────────────────────────── */}
         <div style={{ marginBottom: 24 }}>
           <button
             onClick={() => navigate('applicants')}
@@ -399,13 +386,10 @@ export default function LoanDetailsPage({ loanId, navigate, showToast }: Props) 
           </div>
         </div>
 
-        {/* ── 3-col layout ────────────────────────────────────────────────── */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 20, alignItems: 'start' }}>
 
-          {/* ── Col 1: Risk + AI factors ──────────────────────────────────── */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20, gridColumn: 'span 2' }}>
 
-            {/* Risk assessment */}
             {risk && displayScore != null && (
               <div style={{ ...card }}>
                 <div style={cardHead}>
@@ -417,7 +401,6 @@ export default function LoanDetailsPage({ loanId, navigate, showToast }: Props) 
                 <div style={{ padding: '20px 20px 20px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0 }}>
                   <div style={{ textAlign: 'center', borderRight: `1px solid ${C.border}`, paddingRight: 20 }}>
                     <p style={{ fontSize: 11, color: C.textMute, margin: '0 0 10px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Risk category</p>
-                    {/* FIX: was risk.riskCategory — now uses normalised riskCategory var */}
                     <RiskBadge level={riskCategory} />
                   </div>
                   <div style={{ textAlign: 'center', paddingLeft: 20 }}>
@@ -430,7 +413,6 @@ export default function LoanDetailsPage({ loanId, navigate, showToast }: Props) 
               </div>
             )}
 
-            {/* AI Risk Factors — powered by SHAP */}
             <div style={card}>
               <div style={cardHead}>
                 <p style={{ fontSize: 12, fontWeight: 700, color: C.blue, margin: '0 0 1px', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
@@ -504,7 +486,6 @@ export default function LoanDetailsPage({ loanId, navigate, showToast }: Props) 
               )}
             </div>
 
-            {/* Loan Details */}
             <Section title="Loan details">
               <InfoRow label="Loan amount"     value={formatINR(Number(loan.loanAmount))} />
               <InfoRow label="Interest rate"   value={`${loan.intRate}%`} />
@@ -518,7 +499,6 @@ export default function LoanDetailsPage({ loanId, navigate, showToast }: Props) 
               </div>
             </Section>
 
-            {/* Review Decision */}
             {(loan.reviewedBy || loan.reviewNotes || loan.reviewDate) && (
               <Section title="Review decision">
                 {loan.reviewedBy && (
@@ -551,10 +531,8 @@ export default function LoanDetailsPage({ loanId, navigate, showToast }: Props) 
             )}
           </div>
 
-          {/* ── Col 2: Applicant sidebar ──────────────────────────────────── */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
 
-            {/* Applicant */}
             <div style={card}>
               <div style={cardHead}>
                 <p style={{ fontSize: 12, fontWeight: 700, color: C.textSub, margin: 0, textTransform: 'uppercase', letterSpacing: '0.07em' }}>
@@ -586,7 +564,6 @@ export default function LoanDetailsPage({ loanId, navigate, showToast }: Props) 
               </div>
             </div>
 
-            {/* Employment */}
             <Section title="Employment">
               <InfoRow label="Status"           value={(applicant?.employmentStatus as string)?.replace('-', ' ')} />
               <InfoRow label="Employment years" value={applicant?.empLength != null ? `${applicant.empLength} yrs` : '—'} />
@@ -598,7 +575,6 @@ export default function LoanDetailsPage({ loanId, navigate, showToast }: Props) 
               </div>
             </Section>
 
-            {/* Financials */}
             <Section title="Financials">
               <InfoRow label="Annual income"  value={formatINR(Number(applicant?.annualIncome || 0))} />
               <InfoRow label="Existing debts" value={formatINR(Number(applicant?.existingDebts || 0))} />
