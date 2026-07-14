@@ -1,5 +1,6 @@
 # CREDITRISKAI
 A full-stack loan default risk assessment platform for tracking loan applications and generating AI-driven credit risk scores.
+**Live Demo:** https://credit-risk-ai-five.vercel.app
 ## Technologies Used
 -   **Frontend:** React, TypeScript, Vite, Tailwind CSS
 -   **Backend:** Node.js, Express, MongoDB (Mongoose)
